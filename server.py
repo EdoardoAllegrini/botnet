@@ -44,9 +44,12 @@ def server_program():
     bot_infos[str(address)] = (host_ip, host_ports)
     print(f"Got info about {str(address)}: \nip: \n\t{host_ip} \nopen ports: \n\t{host_ports}")
     
-    action = input("Type irc if you want to connect to a bot using irc protocol: ")
-    if action.lower() == "irc":
-        irc_client_program()
+    while True:
+        action = input("Connect to bot using IRC ('irc'), exit ('exit'): ")
+        if action.lower() == "irc":
+            irc_client_program()
+        elif action == 'exit':
+            break
     # while True:
     #     # receive data stream. it won't accept data packet greater than 1024 bytes
     #     data = conn.recv(1024).decode()
