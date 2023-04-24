@@ -15,7 +15,7 @@ def exec_dos(cmd):
     res = o.decode('ascii')
     return res
 
-def handle_connection(server_socket):
+def handle_irc_connection(server_socket):
     conn, address = server_socket.accept()
     print("[+] Got connection from: " + str(address))
 
@@ -47,5 +47,5 @@ def set_up_irc():
 
     server_socket.listen(clients)
 
-    handle_connection(server_socket)
+    handle_irc_connection(server_socket)
     return 1
