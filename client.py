@@ -5,18 +5,20 @@ from threading import Thread
 import time
 import config
 
-def get_my_ip():
-    cmd = ['hostname', '-I']
+def exec_cmd(cmd):
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     o, e = proc.communicate()
-    my_ip = o.decode('ascii')
+    result = o.decode('ascii')
+    return result
+    
+def get_my_ip():
+    cmd = ['hostname', '-I']
+    my_ip = exec_cmd(cmd)
     return my_ip[:-1]
 
 def get_my_open_ports():
     cmd = ['netstat', '-tulpn', '|', 'grep', 'LISTEN']
-    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    o, e = proc.communicate()
-    open_ports = o.decode('ascii')
+    open_ports = exec_cmd(cmd)
     return open_ports[:-1]
 
 def send_info_to_server(client_socket, my_ip, my_open_ports):

