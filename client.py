@@ -4,6 +4,7 @@ from irc_server import set_up_irc
 from threading import Thread
 import time
 import config
+import json
 
 def exec_cmd(cmd):
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -19,17 +20,24 @@ def get_my_ip():
 def get_my_open_ports():
     cmd = ['netstat', '-tulpn', '|', 'grep', 'LISTEN']
     open_ports = exec_cmd(cmd)
-    return open_ports[:-1]
+    list_ports = []
+    for info_line in open_ports.split('\n')[2:]:
+        if not info_line:
+            continue
+        port = info_line.split()[3].split(':')[-1]
+        list_ports.append(port)
+    # TO DO: change dumps on send line not here in return
+    return list_ports
 
 def send_info_to_server(client_socket, my_ip, my_open_ports):
     # print("Sending ", my_ip)
-    client_socket.send(f"my_ip: {my_ip}".encode())
+    client_socket.send(str(my_ip).encode())
     data = client_socket.recv(1024).decode()
     if data != "ACK":
         print("Server hasn't received my_ip correctly")
 
     # print("Sending ", my_open_ports)
-    client_socket.send(f"my_open_ports: {my_open_ports}".encode())
+    client_socket.send(json.dumps(my_open_ports).encode('utf-8'))
     data = client_socket.recv(1024).decode()
     if data != "ACK":
         print("Server hasn't received my_open_ports correctly")
