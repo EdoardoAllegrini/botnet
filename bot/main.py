@@ -1,21 +1,23 @@
 import socket
 import subprocess
 from irc_server import set_up_irc
+from http_server import run_http
+from ftp_server import set_up_ftp
 from threading import Thread
 import time
-import config
 import json
+import sys
+import os 
 
-def exec_cmd(cmd):
-    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    o, e = proc.communicate()
-    result = o.decode('ascii')
-    return result
-    
-def get_my_ip():
-    cmd = ['hostname', '-I']
-    my_ip = exec_cmd(cmd)
-    return my_ip[:-1]
+# setting path
+sys.path.append('../')
+# importing
+import config
+from utils.script import get_my_ip, exec_cmd
+
+# services to keep active
+SERVICES = ["http", "irc", "ftp"]
+
 
 def get_my_open_ports():
     cmd = ['netstat', '-tulpn', '|', 'grep', 'LISTEN']
@@ -45,12 +47,24 @@ def send_info_to_server(client_socket, my_ip, my_open_ports):
     return 1
 
 def client_program():
-    # create a thread to listen on ports
-    thread = Thread(target=set_up_irc)
-    # run the thread
-    thread.start()
+    for s in SERVICES:
+        if s == "irc":
+            # create a thread to listen on ports
+            thread = Thread(target=set_up_irc, args=(os.getpid(),))
+            # run the thread
+            thread.start()
+        elif s == "http":
+            # create a thread to listen on ports
+            thread = Thread(target=run_http, args=(os.getpid(),))
+            # run the thread
+            thread.start()
+        elif s == "ftp":
+            # create a thread to listen on ports
+            thread = Thread(target=set_up_ftp, args=(os.getpid(),))
+            # run the thread
+            thread.start()
 
-    # time.sleep(5)
+    time.sleep(5)
     # server info
     cc = config.server_info["ip"]
     port = config.server_info["port"]

