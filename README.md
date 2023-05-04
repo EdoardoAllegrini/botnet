@@ -126,7 +126,7 @@ To get a local copy up and running follow these simple example steps.
    cd CC
    python3 main.py
    ```
-3. On other terminals execute the Bot:
+3. On other hosts (h2, ..., hx where x=6) execute the Bot:
    ```sh
    cd bot
    python3 main.py
