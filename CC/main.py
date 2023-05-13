@@ -51,7 +51,6 @@ def ftp_client_program():
     try:
         client_socket.connect((bot, port))
     except socket.error as serr:
-        print(serr)
         if serr.errno == socket.errno.ECONNREFUSED:
             print(f"[ftp] Bot with ip {bot} not reachable, check bots reachable using command 'dump'")
             return {"action": "down", "content": bot}
@@ -104,13 +103,21 @@ def http_client_program():
         except: pass
 
         if action == "hwsw":
-            hw_sw_infos = requests.get(url+'/hwsw')
+            try:
+                hw_sw_infos = requests.get(url+'/hwsw')
+            except requests.exceptions.ConnectionError as serr:
+                print(f"[IRC] Bot with ip {bot} not reachable, check bots reachable using command 'dump'")
+                return {"action": "down", "content": bot}
             hw_sw_infos = json.loads(hw_sw_infos.text)
             pprint.pprint(hw_sw_infos)
             continue            
 
         else:
-            x = requests.post(url, json = msg)
+            try:
+                x = requests.post(url, json = msg)
+            except requests.exceptions.ConnectionError as serr:
+                print(f"[IRC] Bot with ip {bot} not reachable, check bots reachable using command 'dump'")
+                return {"action": "down", "content": bot}
 
         if action == 'exit':
             return 1
@@ -137,7 +144,7 @@ def irc_client_program():
     try:
         client_socket.connect((bot, port))
     except socket.error as serr:
-        print(serr)
+        # print(serr)
         if serr.errno == socket.errno.ECONNREFUSED:
             print(f"[IRC] Bot with ip {bot} not reachable, check bots reachable using command 'dump'")
             return {"action": "down", "content": bot}
