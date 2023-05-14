@@ -76,13 +76,10 @@ This tool can be used to simulate a botnet and control all the Bots by a single 
 <!-- GETTING STARTED -->
 ## Getting Started
 
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
-
 ### Prerequisites
 
 * python3
-* mininet (not mandatory but for simulating a net)
+* mininet (not mandatory but suggested for simulating a net)
 
 
 ### Installation
@@ -109,7 +106,7 @@ To get a local copy up and running follow these simple example steps.
 
 
 <!-- USAGE EXAMPLES -->
-## Usage
+## Usage with mininet
 
 1. Run the net:
    ```sh
