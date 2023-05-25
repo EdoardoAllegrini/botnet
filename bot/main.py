@@ -64,7 +64,7 @@ def client_program():
             # run the thread
             thread.start()
 
-    time.sleep(5)
+    time.sleep(1)
     # server info
     cc = config.server_info["ip"]
     port = config.server_info["port"]
