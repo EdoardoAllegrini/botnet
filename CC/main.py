@@ -58,6 +58,7 @@ def ftp_client_program():
 
     while True:
         msg = get_action(bot)
+        action = content = ""
         # print("sending ", msg)
         client_socket.send(json.dumps(msg).encode('utf-8'))
 
@@ -81,7 +82,7 @@ def ftp_client_program():
             # set current action that bot is performing
             BOTS[bot]['status'][port] = action
             try:
-                if action != "email_batch":
+                if action != "email_batch" and content != "":
                     BOTS[bot]['status'][port] += f" -> ({content})"
             except: pass
 
@@ -96,6 +97,7 @@ def http_client_program():
 
     while True:
         msg = get_action(bot)
+        action = content = ""
         url = f"http://{bot}:{port}"
 
         action = msg["action"]
@@ -128,7 +130,7 @@ def http_client_program():
             # set current action that bot is performing
             BOTS[bot]['status'][port] = action
             try:
-                if action != "email_batch":
+                if action != "email_batch" and content != "":
                     BOTS[bot]['status'][port] += f" -> ({content})"
             except: pass
 
@@ -152,6 +154,7 @@ def irc_client_program():
 
     while True:
         msg = get_action(bot)
+        action = content = ""
         # print("sending ", msg)
         client_socket.send(json.dumps(msg).encode('utf-8'))
 
@@ -174,7 +177,7 @@ def irc_client_program():
             # set current action that bot is performing
             BOTS[bot]['status'][port] = action
             try:
-                if action != "email_batch":
+                if action != "email_batch" and content != "":
                     BOTS[bot]['status'][port] += f" -> ({content})"
             except: pass
 
