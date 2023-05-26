@@ -1,0 +1,6 @@
+{
+    "receivers": ["<receiver-email>", "<receiver-email>", "..."],
+    "subject": "My subject",
+    "plaintext": "Hi,\nHow are you?\n",
+    "html":  "<html><body><p>Hi,<br>How are you?</html>"
+}
