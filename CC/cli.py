@@ -1,4 +1,4 @@
-from main import main
+from main import server_program
 
 if __name__ == '__main__':
-    main()
+    server_program()

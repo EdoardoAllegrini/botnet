@@ -1,4 +1,4 @@
-from main import main
+from main import client_program
 
 if __name__ == '__main__':
-    main()
+    client_program()
