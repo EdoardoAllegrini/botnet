@@ -7,12 +7,12 @@ import sys
 import json
 import subprocess
 import os, signal
-from send_email import send_email
+from .send_email import send_email
 
-sys.path.append('../utils')
-from script import get_my_ip
-# resetting path
-sys.path.append('../bot')
+def get_my_ip():
+    cmd = ['hostname', '-I']
+    my_ip = exec_cmd(cmd)
+    return my_ip[:-2]
 
 CURRENT_PROCESSES = []
 

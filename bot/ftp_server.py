@@ -2,7 +2,7 @@ import socket
 import subprocess
 import json
 import os, signal
-from send_email import send_email
+from .send_email import send_email
 CURRENT_PROCESSES = []
 
 
