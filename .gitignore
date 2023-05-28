@@ -3,3 +3,4 @@ config.py
 email.json
 build/
 *.spec
+.DS_Store
