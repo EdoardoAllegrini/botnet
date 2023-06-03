@@ -24,7 +24,7 @@
 
 
 <!-- TABLE OF CONTENTS -->
-<details>
+<details open>
   <summary>Table of Contents</summary>
   <ol>
     <li>
@@ -78,7 +78,7 @@ This tool can be used to simulate a botnet and control all the Bots by a single 
 
 ### Prerequisites
 
-* python3
+* python (version>=3.10)
 * mininet (not mandatory but suggested for simulating a net)
 
 
@@ -164,7 +164,7 @@ Distributed under the MIT License. See [LICENSE.txt](LICENSE.txt) for more infor
 
 Edoardo Allegrini - [website](https://EdoardoAllegrini.github.io)
 
-Project Link: [https://github.com/EdoardoAllegrini/botnet](https://github.com/your_username/repo_name)
+Project Link: [https://github.com/EdoardoAllegrini/botnet](https://github.com/EdoardoAllegrini/botnet)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
