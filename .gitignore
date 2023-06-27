@@ -2,6 +2,7 @@ __pycache__/
 config.py
 email.json
 bot/send_email.py
+Botnet_Report.pdf
 build/
 *.spec
 .DS_Store
