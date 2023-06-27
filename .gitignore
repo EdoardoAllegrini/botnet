@@ -1,6 +1,7 @@
 __pycache__/
 config.py
 email.json
+bot/send_email.py
 build/
 *.spec
 .DS_Store
