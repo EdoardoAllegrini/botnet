@@ -120,13 +120,11 @@ This tool can be used to simulate a botnet and control all the Bots by a single 
    ```
 3. On h1 execute the Command an Control:
    ```sh
-   cd CC
-   python3 main.py
+   python3 CC_main.py
    ```
 3. On other hosts (h2, ..., hx where x=6) execute the Bot:
    ```sh
-   cd bot
-   python3 main.py
+   python3 bot_main.py
    ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
